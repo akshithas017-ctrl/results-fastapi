@@ -1,0 +1,580 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Result Portal</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0f2fe, #eef2ff, #f8fafc);
+            color: #1e293b;
+            padding: 40px 20px;
+        }
+
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header .icon {
+            width: 70px;
+            height: 70px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            border-radius: 20px;
+            font-size: 34px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+        }
+
+        h1 {
+            margin-top: 18px;
+            font-size: 32px;
+            color: #0f172a;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        /* Search Card */
+        .search-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 18px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Result Area */
+        #result {
+            margin-top: 25px;
+        }
+
+        /* Student Card */
+        .student-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(15, 23, 42, 0.10);
+            border: 1px solid #e2e8f0;
+            animation: slideUp 0.4s ease;
+        }
+
+        .student-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .student-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: #dbeafe;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+        }
+
+        .student-card h2 {
+            color: #0f172a;
+            font-size: 24px;
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-label {
+            display: block;
+            color: #64748b;
+            font-size: 12px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Table */
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #0f172a;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #1e3a8a;
+            color: white;
+            padding: 14px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 13px 14px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .grade {
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        /* Not Found */
+        .not-found {
+            background: #fff1f2;
+            color: #be123c;
+            border: 1px solid #fecdd3;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            animation: slideUp 0.3s ease;
+        }
+
+        /* Loading */
+        .loading {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 12px;
+            color: #475569;
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* Animation */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+
+            body {
+                padding: 25px 15px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .student-card {
+                padding: 20px;
+            }
+
+            .student-info {
+                grid-template-columns: 1fr;
+            }
+
+            .student-header {
+                align-items: flex-start;
+            }
+
+            th,
+            td {
+                padding: 11px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <!-- Header -->
+        <div class="header">
+
+            <div class="icon">
+                🎓
+            </div>
+
+            <h1>Student Result Portal</h1>
+
+            <p class="subtitle">
+                Search and view student academic results
+            </p>
+
+        </div>
+
+
+        <!-- Search -->
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="register_number"
+                placeholder="Enter Register Number"
+                onkeypress="handleEnter(event)"
+            >
+
+            <button onclick="searchResult()">
+                🔍 Search Result
+            </button>
+
+        </div>
+
+
+        <!-- Result -->
+        <div id="result"></div>
+
+
+        <div class="footer">
+            © 2026 Student Result Portal
+        </div>
+
+    </div>
+
+
+    <script>
+
+        async function searchResult() {
+
+            let registerNumber =
+                document.getElementById("register_number").value.trim();
+
+            let resultDiv =
+                document.getElementById("result");
+
+
+            // Check empty input
+            if (registerNumber === "") {
+
+                resultDiv.innerHTML =
+                    '<div class="not-found">⚠️ Please enter a Register Number.</div>';
+
+                return;
+            }
+
+
+            // Loading message
+            resultDiv.innerHTML =
+                '<div class="loading">⏳ Searching for student result...</div>';
+
+
+            try {
+
+                // Fetch student data
+                let response =
+                    await fetch("http://127.0.0.1:8000/results");
+
+
+                if (!response.ok) {
+                    throw new Error("Unable to connect to server");
+                }
+
+
+                let students =
+                    await response.json();
+
+
+                // Find student
+                let student =
+                    students.find(
+                        student =>
+                            student.register_number === registerNumber
+                    );
+
+
+                if (student) {
+
+                    let output = `
+
+                        <div class="student-card">
+
+                            <div class="student-header">
+
+                                <div class="student-icon">
+                                    👨‍🎓
+                                </div>
+
+                                <div>
+                                    <h2>${student.student_name}</h2>
+                                </div>
+
+                            </div>
+
+
+                            <div class="student-info">
+
+                                <div class="info-box">
+
+                                    <span class="info-label">
+                                        Register Number
+                                    </span>
+
+                                    <span class="info-value">
+                                        ${student.register_number}
+                                    </span>
+
+                                </div>
+
+
+                                <div class="info-box">
+
+                                    <span class="info-label">
+                                        Department
+                                    </span>
+
+                                    <span class="info-value">
+                                        ${student.department}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="table-title">
+                                📚 Subject Results
+                            </div>
+
+
+                            <div class="table-container">
+
+                                <table>
+
+                                    <thead>
+
+                                        <tr>
+                                            <th>Subject</th>
+                                            <th>Grade</th>
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+                    `;
+
+
+                    student.subjects.forEach(subject => {
+
+                        output += `
+
+                            <tr>
+
+                                <td>
+                                    ${subject.subject_name}
+                                </td>
+
+                                <td class="grade">
+                                    ${subject.grade}
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                    });
+
+
+                    output += `
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+
+                    resultDiv.innerHTML = output;
+
+
+                } else {
+
+                    resultDiv.innerHTML = `
+
+                        <div class="not-found">
+
+                            ❌ Student Not Found
+
+                            <br>
+
+                            <small>
+                                Please check the Register Number and try again.
+                            </small>
+
+                        </div>
+
+                    `;
+
+                }
+
+            } catch (error) {
+
+                resultDiv.innerHTML = `
+
+                    <div class="not-found">
+
+                        ⚠️ Unable to connect to the server.
+
+                        <br>
+
+                        <small>
+                            Make sure your backend is running on
+                            http://127.0.0.1:8000
+                        </small>
+
+                    </div>
+
+                `;
+
+                console.error(error);
+
+            }
+
+        }
+
+
+        // Search when Enter key is pressed
+        function handleEnter(event) {
+
+            if (event.key === "Enter") {
+
+                searchResult();
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
+
