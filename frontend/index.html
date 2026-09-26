@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,7 +9,6 @@
     <title>Student Result Portal</title>
 
     <style>
-
         * {
             margin: 0;
             padding: 0;
@@ -23,14 +23,12 @@
             padding: 40px 20px;
         }
 
-        /* Main Container */
         .container {
             width: 100%;
             max-width: 900px;
             margin: auto;
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -61,7 +59,6 @@
             font-size: 15px;
         }
 
-        /* Search Card */
         .search-box {
             background: rgba(255, 255, 255, 0.9);
             padding: 25px;
@@ -108,12 +105,10 @@
             transform: translateY(0);
         }
 
-        /* Result Area */
         #result {
             margin-top: 25px;
         }
 
-        /* Student Card */
         .student-card {
             background: white;
             border-radius: 20px;
@@ -177,7 +172,6 @@
             color: #1e293b;
         }
 
-        /* Table */
         .table-title {
             font-size: 18px;
             font-weight: 600;
@@ -224,7 +218,6 @@
             color: #2563eb;
         }
 
-        /* Not Found */
         .not-found {
             background: #fff1f2;
             color: #be123c;
@@ -236,7 +229,6 @@
             animation: slideUp 0.3s ease;
         }
 
-        /* Loading */
         .loading {
             background: white;
             padding: 20px;
@@ -246,7 +238,6 @@
             box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             margin-top: 25px;
@@ -254,7 +245,6 @@
             font-size: 13px;
         }
 
-        /* Animation */
         @keyframes slideUp {
             from {
                 opacity: 0;
@@ -267,9 +257,7 @@
             }
         }
 
-        /* Mobile Responsive */
         @media (max-width: 600px) {
-
             body {
                 padding: 25px 15px;
             }
@@ -303,16 +291,13 @@
                 padding: 11px;
             }
         }
-
     </style>
 </head>
-
 
 <body>
 
     <div class="container">
 
-        <!-- Header -->
         <div class="header">
 
             <div class="icon">
@@ -327,8 +312,6 @@
 
         </div>
 
-
-        <!-- Search -->
         <div class="search-box">
 
             <input
@@ -344,10 +327,7 @@
 
         </div>
 
-
-        <!-- Result -->
         <div id="result"></div>
-
 
         <div class="footer">
             © 2026 Student Result Portal
@@ -355,19 +335,21 @@
 
     </div>
 
-
     <script>
+
+        // Deployed FastAPI backend
+        const API_URL =
+            "https://results-fastapi-32e0.onrender.com/results";
 
         async function searchResult() {
 
-            let registerNumber =
+            const registerNumber =
                 document.getElementById("register_number").value.trim();
 
-            let resultDiv =
+            const resultDiv =
                 document.getElementById("result");
 
-
-            // Check empty input
+            // Empty input check
             if (registerNumber === "") {
 
                 resultDiv.innerHTML =
@@ -376,35 +358,38 @@
                 return;
             }
 
-
-            // Loading message
+            // Loading
             resultDiv.innerHTML =
                 '<div class="loading">⏳ Searching for student result...</div>';
 
-
             try {
 
-                // Fetch student data
-                let response =
-                    await fetch("http://127.0.0.1:8000/results");
-
+                const response = await fetch(API_URL, {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                });
 
                 if (!response.ok) {
-                    throw new Error("Unable to connect to server");
+                    throw new Error(
+                        `Server returned ${response.status}`
+                    );
                 }
 
+                const students = await response.json();
 
-                let students =
-                    await response.json();
-
+                // Make sure API returned an array
+                if (!Array.isArray(students)) {
+                    throw new Error("Invalid data received from server");
+                }
 
                 // Find student
-                let student =
-                    students.find(
-                        student =>
-                            student.register_number === registerNumber
-                    );
-
+                const student = students.find(
+                    student =>
+                        String(student.register_number).trim().toLowerCase() ===
+                        registerNumber.toLowerCase()
+                );
 
                 if (student) {
 
@@ -419,11 +404,10 @@
                                 </div>
 
                                 <div>
-                                    <h2>${student.student_name}</h2>
+                                    <h2>${escapeHTML(student.student_name || "Student")}</h2>
                                 </div>
 
                             </div>
-
 
                             <div class="student-info">
 
@@ -434,11 +418,10 @@
                                     </span>
 
                                     <span class="info-value">
-                                        ${student.register_number}
+                                        ${escapeHTML(student.register_number)}
                                     </span>
 
                                 </div>
-
 
                                 <div class="info-box">
 
@@ -447,56 +430,68 @@
                                     </span>
 
                                     <span class="info-value">
-                                        ${student.department}
+                                        ${escapeHTML(student.department || "N/A")}
                                     </span>
 
                                 </div>
 
                             </div>
 
-
                             <div class="table-title">
                                 📚 Subject Results
                             </div>
-
 
                             <div class="table-container">
 
                                 <table>
 
                                     <thead>
-
                                         <tr>
                                             <th>Subject</th>
                                             <th>Grade</th>
                                         </tr>
-
                                     </thead>
 
                                     <tbody>
                     `;
 
+                    if (Array.isArray(student.subjects) && student.subjects.length > 0) {
 
-                    student.subjects.forEach(subject => {
+                        student.subjects.forEach(subject => {
+
+                            output += `
+
+                                <tr>
+
+                                    <td>
+                                        ${escapeHTML(subject.subject_name || "N/A")}
+                                    </td>
+
+                                    <td class="grade">
+                                        ${escapeHTML(subject.grade || "N/A")}
+                                    </td>
+
+                                </tr>
+
+                            `;
+
+                        });
+
+                    } else {
 
                         output += `
 
                             <tr>
 
-                                <td>
-                                    ${subject.subject_name}
-                                </td>
-
-                                <td class="grade">
-                                    ${subject.grade}
+                                <td colspan="2" style="text-align:center;">
+                                    No subject results available
                                 </td>
 
                             </tr>
 
                         `;
 
-                    });
-
+                    }
 
                     output += `
 
@@ -510,9 +505,7 @@
 
                     `;
 
-
                     resultDiv.innerHTML = output;
-
 
                 } else {
 
@@ -536,6 +529,8 @@
 
             } catch (error) {
 
+                console.error("API Error:", error);
+
                 resultDiv.innerHTML = `
 
                     <div class="not-found">
@@ -545,29 +540,35 @@
                         <br>
 
                         <small>
-                            Make sure your backend is running on
-                            http://127.0.0.1:8000
+                            Please make sure the deployed backend is running
+                            and allows requests from this website.
                         </small>
 
                     </div>
 
                 `;
 
-                console.error(error);
-
             }
 
         }
 
-
-        // Search when Enter key is pressed
+        // Enter key search
         function handleEnter(event) {
 
             if (event.key === "Enter") {
-
                 searchResult();
-
             }
+
+        }
+
+        // Prevent HTML injection from API data
+        function escapeHTML(value) {
+
+            const div = document.createElement("div");
+
+            div.textContent = value ?? "";
+
+            return div.innerHTML;
 
         }
 
