@@ -80,5 +80,3 @@ def get_results():
             ]
         }
     ]
-
-
