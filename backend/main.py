@@ -1,47 +1,84 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
-app=FastAPI()
 
-students=[{"RollNo":1,"name":"Praveen","Age":21}]
+app = FastAPI()
 
-class Student(BaseModel):
-    RollNo:int
-    name:str
-    Age:int
 
-@app.get("/students")
-def get_students():
-    return students
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
-@app.post("/students")
-def add_student(student:Student):
-    new_student=student.model_dump()
-    students.append(new_student)
-    return {"message":"Student Added Successfully","data":new_student}
 
-@app.put("/students/{rollNo}")
-def update_student(rollNo:int,student:Student):
-    for student_record in students:
-        if student_record["RollNo"]==rollNo:
-            student_record["RollNo"]=student.RollNo
-            student_record["name"]=student.name
-            student_record["Age"]=student.Age
-            return {"message":"Student Updated Successfully","data":student_record}
-    return {"message":"Student Not Found"}
+@app.get("/results")
+def get_results():
 
-@app.patch("/students/{rollNo}")
-def update_student_age(rollNo:int,age:int):
-    for student_record in students:
-        if student_record["RollNo"]==rollNo:
-            student_record["Age"]=age
-            return {"message":"Student Age Updated","data":student_record}
-    return {"message":"Student Not Found"}
 
-@app.delete("/students/{rollNo}")
-def delete_student(rollNo:int):
-    for student_record in students:
-        if student_record["RollNo"]==rollNo:
-            students.remove(student_record)
-            return {"message":"Student Deleted Successfully","data":student_record}
-    return {"message":"Student Not Found"}
+    return [
+        {
+            "student_name": "Rahul Kumar",
+            "register_number": "22CS101",
+            "department": "CSE",
+            "subjects": [
+                {
+                    "subject_name": "Python Programming",
+                    "grade": "A+"
+                },
+                {
+                    "subject_name": "DBMS",
+                    "grade": "A"
+                },
+                {
+                    "subject_name": "REST API Development",
+                    "grade": "B+"
+                }
+            ]
+        },
+
+
+        {
+            "student_name": "Priya Sharma",
+            "register_number": "22CS102",
+            "department": "CSE",
+            "subjects": [
+                {
+                    "subject_name": "Python Programming",
+                    "grade": "A"
+                },
+                {
+                    "subject_name": "DBMS",
+                    "grade": "B+"
+                },
+                {
+                    "subject_name": "REST API Development",
+                    "grade": "A+"
+                }
+            ]
+        },
+
+
+        {
+            "student_name": "Arun Kumar",
+            "register_number": "22CS103",
+            "department": "CSE",
+            "subjects": [
+                {
+                    "subject_name": "Python Programming",
+                    "grade": "B+"
+                },
+                {
+                    "subject_name": "DBMS",
+                    "grade": "A"
+                },
+                {
+                    "subject_name": "REST API Development",
+                    "grade": "A"
+                }
+            ]
+        }
+    ]
+
+
